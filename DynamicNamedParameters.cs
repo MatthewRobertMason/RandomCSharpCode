@@ -9,21 +9,27 @@ public class Program
 	{
 		// https://docs.microsoft.com/en-us/dotnet/api/system.reflection.methodbase.invoke?redirectedfrom=MSDN&view=net-6.0#overloads:~:text=a%20MethodBuilder.-,Examples,-The%20following%20code
 		// Get Class
-		Type magicType = Type.GetType("MyTestClass");
+		//Type myType = Type.GetType("MyTestClass");
+		Type myType = typeof(MyTestClass);
 		
 		// Create Class
-		ConstructorInfo magicConstructor = magicType.GetConstructor(Type.EmptyTypes);
-		object magicClassObject = magicConstructor.Invoke(new object[]{});
-
-        	// Get the Method
-        	MethodInfo magicMethod = magicType.GetMethod("MyMethod");
+        //ConstructorInfo classConstructor = myType.GetConstructor(Type.EmptyTypes);
+        //object classObject = classConstructor.Invoke(new object[]{});
+		MyTestClass classObject = new MyTestClass();
+		
+        // Get the Method
+		string methodName = nameof(MyTestClass.MyMethod);
+        MethodInfo myMethod = myType.GetMethod(methodName);
 		
 		// Add Parameters
 		Dictionary<string, object> parameters = new Dictionary<string, object>();
 		parameters.Add("message", "Hello");
 		
 		// Invoke Method
-		magicMethod.InvokeWithNamedParameters(magicClassObject, parameters);
+		myMethod.InvokeWithNamedParameters(classObject, parameters);
+		
+		MyTestClass mtc = new MyTestClass();
+		mtc.MyMethod();
 	}
 }
 
@@ -40,8 +46,8 @@ public class MyTestClass
 }
 
 // https://stackoverflow.com/a/13072614
-public static class ReflectionExtensions 
-{
+public static class ReflectionExtensions {
+
     public static object InvokeWithNamedParameters(this MethodBase self, object obj, IDictionary<string, object> namedParameters) { 
         return self.Invoke(obj, MapParameters(self, namedParameters));
     }
