@@ -7,16 +7,22 @@ public class Program
 {
 	public static void Main()
 	{
+		// https://docs.microsoft.com/en-us/dotnet/api/system.reflection.methodbase.invoke?redirectedfrom=MSDN&view=net-6.0#overloads:~:text=a%20MethodBuilder.-,Examples,-The%20following%20code
+		// Get Class
 		Type magicType = Type.GetType("MyTestClass");
-        ConstructorInfo magicConstructor = magicType.GetConstructor(Type.EmptyTypes);
-        object magicClassObject = magicConstructor.Invoke(new object[]{});
-
-        // Get the ItsMagic method and invoke with a parameter value of 100
-
-        MethodInfo magicMethod = magicType.GetMethod("MyMethod");
 		
+		// Create Class
+		ConstructorInfo magicConstructor = magicType.GetConstructor(Type.EmptyTypes);
+		object magicClassObject = magicConstructor.Invoke(new object[]{});
+
+        	// Get the Method
+        	MethodInfo magicMethod = magicType.GetMethod("MyMethod");
+		
+		// Add Parameters
 		Dictionary<string, object> parameters = new Dictionary<string, object>();
 		parameters.Add("message", "Hello");
+		
+		// Invoke Method
 		magicMethod.InvokeWithNamedParameters(magicClassObject, parameters);
 	}
 }
@@ -33,8 +39,9 @@ public class MyTestClass
 	}
 }
 
-public static class ReflectionExtensions {
-
+// https://stackoverflow.com/a/13072614
+public static class ReflectionExtensions 
+{
     public static object InvokeWithNamedParameters(this MethodBase self, object obj, IDictionary<string, object> namedParameters) { 
         return self.Invoke(obj, MapParameters(self, namedParameters));
     }
