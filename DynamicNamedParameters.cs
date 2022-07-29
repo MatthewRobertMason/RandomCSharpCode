@@ -13,13 +13,13 @@ public class Program
 		Type myType = typeof(MyTestClass);
 		
 		// Create Class
-        //ConstructorInfo classConstructor = myType.GetConstructor(Type.EmptyTypes);
-        //object classObject = classConstructor.Invoke(new object[]{});
+		//ConstructorInfo classConstructor = myType.GetConstructor(Type.EmptyTypes);
+		//object classObject = classConstructor.Invoke(new object[]{});
 		MyTestClass classObject = new MyTestClass();
 		
-        // Get the Method
+		// Get the Method
 		string methodName = nameof(MyTestClass.MyMethod);
-        MethodInfo myMethod = myType.GetMethod(methodName);
+		MethodInfo myMethod = myType.GetMethod(methodName);
 		
 		// Add Parameters
 		Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -46,29 +46,32 @@ public class MyTestClass
 }
 
 // https://stackoverflow.com/a/13072614
-public static class ReflectionExtensions {
+public static class ReflectionExtensions 
+{
+	public static object InvokeWithNamedParameters(this MethodBase self, object obj, IDictionary<string, object> namedParameters) 
+	{ 
+		return self.Invoke(obj, MapParameters(self, namedParameters));
+	}
 
-    public static object InvokeWithNamedParameters(this MethodBase self, object obj, IDictionary<string, object> namedParameters) { 
-        return self.Invoke(obj, MapParameters(self, namedParameters));
-    }
+	public static object[] MapParameters(MethodBase method, IDictionary<string, object> namedParameters)
+	{
+		string[] paramNames = method.GetParameters().Select(p => p.Name).ToArray();
+		object[] parameters = new object[paramNames.Length];
 
-    public static object[] MapParameters(MethodBase method, IDictionary<string, object> namedParameters)
-    {
-        string[] paramNames = method.GetParameters().Select(p => p.Name).ToArray();
-        object[] parameters = new object[paramNames.Length];
-        for (int i = 0; i < parameters.Length; ++i) 
-        {
-            parameters[i] = Type.Missing;
-        }
-        foreach (var item in namedParameters)
-        {
-            var paramName = item.Key;
-            var paramIndex = Array.IndexOf(paramNames, paramName);
-            if (paramIndex >= 0)
-            {
-                parameters[paramIndex] = item.Value;
-            }
-        }
-        return parameters;
-    }
+		for (int i = 0; i < parameters.Length; ++i) 
+		{
+			parameters[i] = Type.Missing;
+		}
+
+		foreach (var item in namedParameters)
+		{
+			var paramName = item.Key;
+			var paramIndex = Array.IndexOf(paramNames, paramName);
+			if (paramIndex >= 0)
+			{
+				parameters[paramIndex] = item.Value;
+			}
+		}
+		return parameters;
+	}
 }
